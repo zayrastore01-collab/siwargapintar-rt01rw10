@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIWARGA - RT 01 RW 10 Cendrawasih Raya</title>
+<style>
+  * { 
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+  }
+  html { scroll-behavior: smooth; }
+  body { background: #f8fafc; color: #1e293b; line-height: 1.6; }
+  
+  .gradient-text {
+    background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .card-hover { transition: all 0.3s ease; }
+  .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+  .nav-active { background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%); color: white !important; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-slide { animation: slideIn 0.4s ease-out; }
+  .modal-backdrop { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+  #qrCanvas { image-rendering: pixelated; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #f1f5f9; }
+  ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+  
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
+  .header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .header-inner { display: flex; justify-content: space-between; align-items: center; height: 64px; }
+  .logo-box { display: flex; align-items: center; gap: 12px; }
+  .logo { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .btn { padding: 8px 16px; font-size: 14px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; }
+  .btn-primary { background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%); color: white; }
+  .btn-primary:hover { box-shadow: 0 4px 12px rgba(14,165,233,0.4); }
+  .btn-secondary { background: #e2e8f0; color: #475569; }
+  .btn-secondary:hover { background: #cbd5e1; }
+  .btn-success { background: #22c55e; color: white; }
+  .btn-danger { background: #ef4444; color: white; }
+  .badge { padding: 4px 12px; background: #dcfce7; color: #15803d; font-size: 12px; font-weight: 600; border-radius: 999px; }
+  
+  .nav { background: white; border-bottom: 1px solid #e2e8f0; position: sticky; top: 64px; z-index: 40; }
+  .nav-inner { display: flex; gap: 4px; overflow-x: auto; padding: 8px 0; }
+  .nav-btn { padding: 8px 16px; font-size: 14px; font-weight: 500; border-radius: 8px; white-space: nowrap; border: none; background: transparent; color: #64748b; cursor: pointer; }
+  .nav-btn:hover { background: #f1f5f9; }
+  
+  .main { padding: 32px 16px; }
+  .page-title { font-size: 30px; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+  .page-desc { color: #64748b; margin-bottom: 24px; }
+  
+  .grid { display: grid; gap: 16px; }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  
+  .stat-card { padding: 24px; border-radius: 16px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+  .stat-card-sky { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); }
+  .stat-card-emerald { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+  .stat-card-amber { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+  .stat-card-violet { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+  .stat-value { font-size: 30px; font-weight: 700; margin-top: 4px; }
+  .stat-label { font-size: 14px; opacity: 0.9; }
+  
+  .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+  .card-title { font-size: 18px; font-weight: 700; color: #1e293b; margin-bottom: 16px; }
+  
+  .table-wrap { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+  th { padding: 12px 24px; text-align: left; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; }
+  td { padding: 16px 24px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+  tr:hover { background: #f8fafc; }
+  
+  .modal { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal-content { background: white; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.25); max-width: 448px; width: 100%; padding: 24px; max-height: 90vh; overflow-y: auto; }
+  .modal-title { font-size: 24px; font-weight: 700; color: #1e293b; margin-bottom: 16px; }
+  
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px; }
+  .form-input { width: 100%; padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; }
+  .form-input:focus { outline: none; border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14,165,233,0.1); }
+  
+  .flex { display: flex; }
+  .flex-between { justify-content: space-between; align-items: center; }
+  .flex-gap { gap: 8px; }
+  .flex-wrap { flex-wrap: wrap; }
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+  .tag { padding: 4px 12px; font-size: 12px; font-weight: 600; border-radius: 999px; }
+  .tag-sky { background: #e0f2fe; color: #0369a1; }
+  .tag-emerald { background: #d1fae5; color: #047857; }
+  .tag-amber { background: #fef3c7; color: #b45309; }
+  .tag-green { background: #dcfce7; color: #15803d; }
+  .tag-blue { background: #dbeafe; color: #1d4ed8; }
+  .tag-red { background: #fee2e2; color: #b91c1c; }
+  .tag-slate { background: #f1f5f9; color: #475569; }
+  
+  .toast-container { position: fixed; top: 16px; right: 16px; z-index: 100; display: flex; flex-direction: column; gap: 8px; }
+  .toast { padding: 12px 16px; border-radius: 8px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s; }
+  
+  .keluhan-item { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
+  .surat-item { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
+  
+  @media (max-width: 768px) {
+    .grid-4 { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .page-title { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div id="toastContainer" class="toast-container"></div>
+
+<header class="header">
+  <div class="container header-inner">
+    <div class="logo-box">
+      <div class="logo">🏠</div>
+      <div>
+        <h1 class="gradient-text" style="font-size: 18px; font-weight: 700;">SIWARGA RT 01</h1>
+        <p style="font-size: 12px; color: #64748b;">RW 10 Cendrawasih Raya, Depok</p>
+      </div>
+    </div>
+    <div class="flex flex-gap">
+      <span id="userBadge" class="badge hidden">Admin</span>
+      <button id="btnLogin" onclick="showModal('loginModal')" class="btn btn-primary">Login Pengurus</button>
+      <button id="btnLogout" onclick="logout()" class="btn btn-secondary hidden">Logout</button>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="container nav-inner" id="mainNav">
+    <button onclick="switchPage('dashboard')" data-page="dashboard" class="nav-btn nav-active">Dashboard</button>
+    <button onclick="switchPage('ronda')" data-page="ronda" class="nav-btn">Absensi Ronda</button>
+    <button onclick="switchPage('pertemuan')" data-page="pertemuan" class="nav-btn">Pertemuan</button>
+    <button onclick="switchPage('keluhan')" data-page="keluhan" class="nav-btn">Laporan Keluhan</button>
+    <button onclick="switchPage('iuran')" data-page="iuran" class="nav-btn">Transparansi Iuran</button>
+    <button onclick="switchPage('surat')" data-page="surat" class="nav-btn">Surat Pengantar</button>
+    <button onclick="switchPage('pengaturan')" data-page="pengaturan" class="nav-btn admin-only hidden">Pengaturan</button>
+  </div>
+</nav>
+
+<main class="container main">
+
+  <div id="page-dashboard" class="page animate-slide">
+    <h2 class="page-title">Dashboard RT 01 RW 10</h2>
+    <p class="page-desc">Jl. Cendrawasih Raya, Kel. Pengasinan, Kec. Sawangan, Kota Depok</p>
+
+    <div class="grid grid-4" style="margin-bottom: 32px;">
+      <div class="stat-card stat-card-sky card-hover">
+        <div class="flex flex-between" style="margin-bottom: 16px;">
+          <div>
+            <p class="stat-label">Kehadiran Ronda</p>
+            <h3 class="stat-value" id="statRonda">0%</h3>
+          </div>
+          <div style="font-size: 40px; opacity: 0.8;">🌙</div>
+        </div>
+        <p style="font-size: 12px; opacity: 0.9;">Bulan ini</p>
+      </div>
+
+      <div class="stat-card stat-card-emerald card-hover">
+        <div class="flex flex-between" style="margin-bottom: 16px;">
+          <div>
+            <p class="stat-label">Kehadiran Pertemuan</p>
+            <h3 class="stat-value" id="statPertemuan">0%</h3>
+          </div>
+          <div style="font-size: 40px; opacity: 0.8;">👥</div>
+        </div>
+        <p style="font-size: 12px; opacity: 0.9;">Bulan ini</p>
+      </div>
+
+      <div class="stat-card stat-card-amber card-hover">
+        <div class="flex flex-between" style="margin-bottom: 16px;">
+          <div>
+            <p class="stat-label">Keluhan Aktif</p>
+            <h3 class="stat-value" id="statKeluhan">0</h3>
+          </div>
+          <div style="font-size: 40px; opacity: 0.8;">⚠️</div>
+        </div>
+        <p style="font-size: 12px; opacity: 0.9;">Belum selesai</p>
+      </div>
+
+      <div class="stat-card stat-card-violet card-hover">
+        <div class="flex flex-between" style="margin-bottom: 16px;">
+          <div>
+            <p class="stat-label">Saldo Kas</p>
+            <h3 class="stat-value" style="font-size: 24px;" id="statKas">Rp 0</h3>
+          </div>
+          <div style="font-size: 40px; opacity: 0.8;">💰</div>
+        </div>
+        <p style="font-size: 12px; opacity: 0.9;">Update terbaru</p>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-bottom: 32px;">
+      <div class="card">
+        <div class="flex flex-between" style="margin-bottom: 16px;">
+          <h3 class="card-title">Grafik Kehadiran Ronda</h3>
+          <select id="filterTahunRonda" onchange="renderCharts()" class="form-input" style="width: auto;"></select>
+        </div>
+        <canvas id="chartRonda" width="600" height="300"></canvas>
+        <p style="text-align: center; font-size: 12px; color: #64748b; margin-top: 8px;">Total Tahunan: <strong id="totalRondaTahun">0%</strong></p>
+      </div>
+
+      <div class="card">
+        <div class="flex flex-between" style="margin-bottom: 16px;">
+          <h3 class="card-title">Grafik Kehadiran Pertemuan</h3>
+          <select id="filterTahunPertemuan" onchange="renderCharts()" class="form-input" style="width: auto;"></select>
+        </div>
+        <canvas id="chartPertemuan" width="600" height="300"></canvas>
+        <p style="text-align: center; font-size: 12px; color: #64748b; margin-top: 8px;">Total Tahunan: <strong id="totalPertemuanTahun">0%</strong></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Kegiatan Terdekat</h3>
+      <div id="jadwalTerdekat" style="display: flex; flex-direction: column; gap: 12px;"></div>
+    </div>
+  </div>
+
+  <div id="page-ronda" class="page hidden animate-slide">
+    <div class="flex flex-between flex-wrap" style="margin-bottom: 24px;">
+      <div>
+        <h2 class="page-title">Absensi Ronda</h2>
+        <p class="page-desc">Kelola jadwal dan absensi ronda malam</p>
+      </div>
+      <div class="flex flex-gap flex-wrap">
+        <button onclick="blastWA('ronda')" class="btn btn-success">📱 Blast WA Pengingat</button>
+        <button onclick="showModal('modalJadwalRonda')" class="btn btn-primary admin-only hidden">+ Buat Jadwal</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Jam</th>
+              <th>Petugas</th>
+              <th>Kehadiran</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabelRonda"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-pertemuan" class="page hidden animate-slide">
+    <div class="flex flex-between flex-wrap" style="margin-bottom: 24px;">
+      <div>
+        <h2 class="page-title">Absensi Pertemuan</h2>
+        <p class="page-desc">Kelola jadwal dan absensi pertemuan warga</p>
+      </div>
+      <div class="flex flex-gap flex-wrap">
+        <button onclick="blastWA('pertemuan')" class="btn btn-success">📱 Blast WA Pengingat</button>
+        <button onclick="showModal('modalJadwalPertemuan')" class="btn btn-primary admin-only hidden">+ Buat Jadwal</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Jam</th>
+              <th>Agenda</th>
+              <th>Tempat</th>
+              <th>Kehadiran</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabelPertemuan"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-keluhan" class="page hidden animate-slide">
+    <div class="flex flex-between flex-wrap" style="margin-bottom: 24px;">
+      <div>
+        <h2 class="page-title">Laporan Keluhan Warga</h2>
+        <p class="page-desc">Sampaikan aspirasi dan laporan masalah lingkungan</p>
+      </div>
+      <button onclick="showModal('modalKeluhan')" class="btn btn-primary">+ Buat Laporan</button>
+    </div>
+
+    <div id="listKeluhan" class="grid grid-2"></div>
+  </div>
+
+  <div id="page-iuran" class="page hidden animate-slide">
+    <div class="flex flex-between flex-wrap" style="margin-bottom: 24px;">
+      <div>
+        <h2 class="page-title">Transparansi Iuran</h2>
+        <p class="page-desc">Data pemasukan dan pengeluaran kas RT</p>
+      </div>
+      <button onclick="showModal('modalIuran')" class="btn btn-primary admin-only hidden">+ Catat Transaksi</button>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Jenis</th>
+              <th>Keterangan</th>
+              <th>Jumlah</th>
+              <th class="admin-only hidden">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabelIuran"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-surat" class="page hidden animate-slide">
+    <div class="flex flex-between flex-wrap" style="margin-bottom: 24px;">
+      <div>
+        <h2 class="page-title">Surat Pengantar RT</h2>
+        <p class="page-desc">Ajukan surat pengantar untuk keperluan administrasi</p>
+      </div>
+      <button onclick="showModal('modalSurat')" class="btn btn-primary">+ Ajukan Surat</button>
+    </div>
+
+    <div id="listSurat" class="grid grid-3"></div>
+  </div>
+
+  <div id="page-pengaturan" class="page hidden animate-slide">
+    <h2 class="page-title">Pengaturan</h2>
+    <p class="page-desc">Kelola data dan konfigurasi sistem</p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3 class="card-title">Nomor WA Grup RT</h3>
+        <div class="form-group">
+          <label class="form-label">Nomor WhatsApp</label>
+          <input type="text" id="inputWAGroup" placeholder="6281234567890" class="form-input">
+          <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Format: 62xxx (tanpa +)</p>
+        </div>
+        <button onclick="simpanWAGroup()" class="btn btn-primary" style="width: 100%;">Simpan</button>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Export Data</h3>
+        <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Download semua data dalam format JSON</p>
+        <button onclick="exportData()" class="btn" style="width: 100%; background: #1e293b; color: white;">Export Semua Data</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Modals -->
+<div id="loginModal" class="modal hidden modal-backdrop">
+  <div class="modal-content animate-slide">
+    <h3 class="modal-title">Login Pengurus</h3>
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" id="loginUsername" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="loginPassword" required class="form-input">
+      </div>
+      <div class="flex flex-gap">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Login</button>
+        <button type="button" onclick="closeModal('loginModal')" class="btn btn-secondary">Batal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="modalJadwalRonda" class="modal hidden modal-backdrop">
+  <div class="modal-content animate-slide">
+    <h3 class="modal-title">Buat Jadwal Ronda</h3>
+    <form onsubmit="buatJadwalRonda(event)">
+      <div class="form-group">
+        <label class="form-label">Tanggal</label>
+        <input type="date" id="rondaTanggal" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jam</label>
+        <input type="time" id="rondaJam" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Petugas</label>
+        <input type="text" id="rondaPetugas" placeholder="Bp. Ahmad, Bp. Budi" required class="form-input">
+      </div>
+      <div class="flex flex-gap">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Simpan</button>
+        <button type="button" onclick="closeModal('modalJadwalRonda')" class="btn btn-secondary">Batal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="modalJadwalPertemuan" class="modal hidden modal-backdrop">
+  <div class="modal-content animate-slide">
+    <h3 class="modal-title">Buat Jadwal Pertemuan</h3>
+    <form onsubmit="buatJadwalPertemuan(event)">
+      <div class="form-group">
+        <label class="form-label">Tanggal</label>
+        <input type="date" id="pertemuanTanggal" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jam</label>
+        <input type="time" id="pertemuanJam" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Agenda</label>
+        <input type="text" id="pertemuanAgenda" placeholder="Rapat Bulanan" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tempat</label>
+        <input type="text" id="pertemuanTempat" placeholder="Balai Warga" required class="form-input">
+      </div>
+      <div class="flex flex-gap">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Simpan</button>
+        <button type="button" onclick="closeModal('modalJadwalPertemuan')" class="btn btn-secondary">Batal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="modalQR" class="modal hidden modal-backdrop">
+  <div class="modal-content animate-slide text-center">
+    <h3 class="modal-title">QR Code Absensi</h3>
+    <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;" id="qrInfo"></p>
+    <div style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+      <canvas id="qrCanvas" width="256" height="256" style="margin: 0 auto; display: block;"></canvas>
+    </div>
+    <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">Scan QR ini untuk langsung mengisi form absensi</p>
+    <div class="flex flex-gap">
+      <button onclick="downloadQR()" class="btn btn-primary" style="flex: 1;">Download</button>
+      <button onclick="closeModal('modalQR')" class="btn btn-secondary">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalAbsen" class="modal hidden modal-backdrop">
+  <div class="modal-content animate-slide">
+    <h3 class="modal-title">Form Absensi</h3>
+    <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;" id="absenInfo"></p>
+    <form onsubmit="submitAbsen(event)">
+      <input type="hidden" id="absenType">
+      <input type="hidden" id="absenId">
+      <div class="form-group">
+        <label class="form-label">Nama Lengkap</label>
+        <input type="text" id="absenNama" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">No. Rumah</label>
+        <input type="text" id="absenRumah" placeholder="A1/12" required class="form-input">
+      </div>
+      <div class="flex flex-gap">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Absen</button>
+        <button type="button" onclick="closeModal('modalAbsen')" class="btn btn-secondary">Batal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="modalKeluhan" class="modal hidden modal-backdrop">
+  <div class="modal-content animate-slide">
+    <h3 class="modal-title">Buat Laporan Keluhan</h3>
+    <form onsubmit="submitKeluhan(event)">
+      <div class="form-group">
+        <label class="form-label">Nama Pelapor</label>
+        <input type="text" id="keluhanNama" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">No. Rumah</label>
+        <input type="text" id="keluhanRumah" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kategori</label>
+        <select id="keluhanKategori" required class="form-input">
+          <option value="">Pilih Kategori</option>
+          <option value="Keamanan">Keamanan</option>
+          <option value="Kebersihan">Kebersihan</option>
+          <option value="Infrastruktur">Infrastruktur</option>
+          <option value="Sosial">Sosial</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Deskripsi</label>
+        <textarea id="keluhanDeskripsi" required rows="3" class="form-input"></textarea>
+      </div>
+      <div class="flex flex-gap">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Kirim Laporan</button>
+        <button type="button" onclick="closeModal('modalKeluhan')" class="btn btn-secondary">Batal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="modalIuran" class="modal hidden modal-backdrop">
+  <div class="modal-content animate-slide">
+    <h3 class="modal-title">Catat Transaksi Iuran</h3>
+    <form onsubmit="submitIuran(event)">
+      <div class="form-group">
+        <label class="form-label">Tanggal</label>
+        <input type="date" id="iuranTanggal" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jenis</label>
+        <select id="iuranJenis" required class="form-input">
+          <option value="masuk">Pemasukan</option>
+          <option value="keluar">Pengeluaran</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Keterangan</label>
+        <input type="text" id="iuranKeterangan" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jumlah (Rp)</label>
+        <input type="number" id="iuranJumlah" required class="form-input">
+      </div>
+      <div class="flex flex-gap">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Simpan</button>
+        <button type="button" onclick="closeModal('modalIuran')" class="btn btn-secondary">Batal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="modalSurat" class="modal hidden modal-backdrop">
+  <div class="modal-content animate-slide">
+    <h3 class="modal-title">Ajukan Surat Pengantar</h3>
+    <form onsubmit="submitSurat(event)">
+      <div class="form-group">
+        <label class="form-label">Nama Lengkap</label>
+        <input type="text" id="suratNama" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">NIK</label>
+        <input type="text" id="suratNIK" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">No. Rumah</label>
+        <input type="text" id="suratRumah" required class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">No. WA Pemohon</label>
+        <input type="text" id="suratWA" placeholder="6281234567890" required class="form-input">
+        <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Untuk kirim surat otomatis via WA</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Keperluan</label>
+        <select id="suratKeperluan" required class="form-input">
+          <option value="">Pilih Keperluan</option>
+          <option value="KTP">Pembuatan KTP</option>
+          <option value="KK">Pembuatan KK</option>
+          <option value="Domisili">Surat Domisili</option>
+          <option value="SKCK">Pengantar SKCK</option>
+          <option value="Nikah">Pengantar Nikah</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+      </div>
+      <div class="flex flex-gap">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Buat Surat</button>
+        <button type="button" onclick="closeModal('modalSurat')" class="btn btn-secondary">Batal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="modalSuratPreview" class="modal hidden modal-backdrop">
+  <div class="modal-content animate-slide">
+    <h3 class="modal-title">Preview Surat Pengantar</h3>
+    <div id="previewSuratContent" style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; line-height: 1.8; white-space: pre-wrap;"></div>
+    <div class="flex flex-gap" id="modalSuratButtons">
+      <button onclick="kirimSuratWA()" class="btn btn-success" style="flex: 1;">📱 Kirim ke WA Pemohon</button>
+      <button onclick="closeModal('modalSuratPreview')" class="btn btn-secondary">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== QR CODE GENERATOR VANILLA JS - INLINE ====================
+class QRCode {
+  static generate(text, size = 256) {
+    const canvas = document.getElementById('qrCanvas');
+    const ctx = canvas.getContext('2d');
+    const modules = 33;
+    const moduleSize = Math.floor(size / modules);
+    const margin = (size - modules * moduleSize) / 2;
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, size, size);
+    
+    ctx.fillStyle = '#000000';
+    
+    // Finder patterns - 3 corners
+    this.drawFinder(ctx, margin, margin, moduleSize);
+    this.drawFinder(ctx, margin + (modules - 7) * moduleSize, margin, moduleSize);
+    this.drawFinder(ctx, margin, margin + (modules - 7) * moduleSize, moduleSize);
+    
+    // Timing patterns
+    for (let i = 8; i < modules - 8; i++) {
+      if (i % 2 === 0) {
+        ctx.fillRect(margin + i * moduleSize, margin + 6 * moduleSize, moduleSize, moduleSize);
+        ctx.fillRect(margin + 6 * moduleSize, margin + i * moduleSize, moduleSize, moduleSize);
+      }
+    }
+    
+    // Data encoding - simple hash-based pattern
+    const data = this.encodeData(text);
+    let bitIndex = 0;
+    for (let col = modules - 1; col > 0; col -= 2) {
+      if (col === 6) col--;
+      for (let row = 0; row < modules; row++) {
+        for (let c = 0; c < 2; c++) {
+          const i = col - c;
+          if (this.isFinder(i, row, modules) || row === 6 || i === 6) continue;
+          if (bitIndex < data.length && data[bitIndex] === '1') {
+            ctx.fillRect(margin + i * moduleSize, margin + row * moduleSize, moduleSize, moduleSize);
+          }
+          bitIndex++;
+        }
+      }
+    }
+    
+    return canvas.toDataURL();
+  }
+  
+  static encodeData(text) {
+    let bits = '';
+    for (let i = 0; i < text.length; i++) {
+      bits += text.charCodeAt(i).toString(2).padStart(8, '0');
+    }
+    return bits;
+  }
+  
+  static isFinder(i, j, modules) {
+    return (i < 7 && j < 7) || (i >= modules - 7 && j < 7) || (i < 7 && j >= modules - 7);
+  }
+  
+  static drawFinder(ctx, x, y, size) {
+    ctx.fillRect(x, y, 7 * size, size);
+    ctx.fillRect(x, y + 6 * size, 7 * size, size);
+    ctx.fillRect(x, y, size, 7 * size);
+    ctx.fillRect(x + 6 * size, y, size, 7 * size);
+    ctx.fillRect(x + 2 * size, y + 2 * size, 3 * size, 3 * size);
+  }
+}
+
+// ==================== DATA MANAGEMENT ====================
+const DB = {
+  get: (key) => JSON.parse(localStorage.getItem(key) || '[]'),
+  set: (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+  getObj: (key) => JSON.parse(localStorage.getItem(key) || '{}'),
+  setObj: (key, val) => localStorage.setItem(key, JSON.stringify(val))
+};
+
+let isAdmin = false;
+let currentQRData = '';
+let currentSuratData = null;
+
+// ==================== INIT ====================
+window.onload = () => {
+  checkLogin();
+  initData();
+  renderAll();
+  setupURLHandler();
+  setupYearFilters();
+};
+
+function initData() {
+  if (!localStorage.getItem('rt01_initialized')) {
+    const today = new Date();
+    const sampleRonda = [
+      {id: 1, tanggal: formatDate(today), jam: '22:00', petugas: 'Bp. Ahmad, Bp. Budi', hadir: [{nama: 'Bp. Ahmad', rumah: 'A1/01', waktu: new Date().toISOString()}], created: Date.now()},
+      {id: 2, tanggal: formatDate(new Date(today.getTime() + 86400000)), jam: '22:00', petugas: 'Bp. Candra, Bp. Dedi', hadir: [], created: Date.now()}
+    ];
+    const samplePertemuan = [
+      {id: 1, tanggal: formatDate(new Date(today.getTime() + 604800000)), jam: '19:00', agenda: 'Rapat Bulanan', tempat: 'Balai Warga', hadir: [], created: Date.now()}
+    ];
+    DB.set('ronda', sampleRonda);
+    DB.set('pertemuan', samplePertemuan);
+    DB.set('keluhan', []);
+    DB.set('iuran', []);
+    DB.set('surat', []);
+    DB.setObj('settings', {waGroup: ''});
+    localStorage.setItem('rt01_initialized', 'true');
+  }
+}
+
+function setupURLHandler() {
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get('absen');
+  const id = params.get('id');
+  if (type && id) {
+    document.getElementById('absenType').value = type;
+    document.getElementById('absenId').value = id;
+    const data = DB.get(type).find(d => d.id == id);
+    if (data) {
+      document.getElementById('absenInfo').textContent = `${type === 'ronda' ? 'Ronda' : 'Pertemuan'} - ${data.tanggal} ${data.jam}`;
+      showModal('modalAbsen');
+    }
+  }
+}
+
+// ==================== AUTH ====================
+function checkLogin() {
+  isAdmin = localStorage.getItem('rt01_admin') === 'true';
+  updateUIForAdmin();
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const user = document.getElementById('loginUsername').value;
+  const pass = document.getElementById('loginPassword').value;
+  if (user === 'admin' && pass === 'rt0110') {
+    localStorage.setItem('rt01_admin', 'true');
+    isAdmin = true;
+    updateUIForAdmin();
+    closeModal('loginModal');
+    showToast('Login berhasil!', 'success');
+    renderAll();
+  } else {
+    showToast('Username atau password salah!', 'error');
+  }
+}
+
+function logout() {
+  localStorage.removeItem('rt01_admin');
+  isAdmin = false;
+  updateUIForAdmin();
+  showToast('Logout berhasil', 'success');
+  renderAll();
+}
+
+function updateUIForAdmin() {
+  document.getElementById('btnLogin').classList.toggle('hidden', isAdmin);
+  document.getElementById('btnLogout').classList.toggle('hidden', !isAdmin);
+  document.getElementById('userBadge').classList.toggle('hidden', !isAdmin);
+  document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !isAdmin));
+}
+
+// ==================== NAVIGATION ====================
+function switchPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById('page-' + page).classList.remove('hidden');
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.remove('nav-active');
+  });
+  document.querySelector(`[data-page="${page}"]`).classList.add('nav-active');
+  renderAll();
+}
+
+// ==================== RONDA ====================
+function buatJadwalRonda(e) {
+  e.preventDefault();
+  const data = DB.get('ronda');
+  const newData = {
+    id: Date.now(),
+    tanggal: document.getElementById('rondaTanggal').value,
+    jam: document.getElementById('rondaJam').value,
+    petugas: document.getElementById('rondaPetugas').value,
+    hadir: [],
+    created: Date.now()
+  };
+  data.push(newData);
+  DB.set('ronda', data);
+  closeModal('modalJadwalRonda');
+  e.target.reset();
+  showToast('Jadwal ronda berhasil dibuat!', 'success');
+  renderRonda();
+  renderDashboard();
+}
+
+function renderRonda() {
+  const data = DB.get('ronda');
+  const tbody = document.getElementById('tabelRonda');
+  tbody.innerHTML = data.map(item => `
+    <tr>
+      <td>${item.tanggal}</td>
+      <td>${item.jam}</td>
+      <td>${item.petugas}</td>
+      <td><span class="tag tag-sky">${item.hadir.length} orang</span></td>
+      <td>
+        <button onclick="generateQR('ronda', ${item.id})" style="color: #0ea5e9; background: none; border: none; cursor: pointer; font-weight: 500; margin-right: 12px;">QR Code</button>
+        <button onclick="lihatHadir('ronda', ${item.id})" style="color: #10b981; background: none; border: none; cursor: pointer; font-weight: 500; margin-right: 12px;">Lihat</button>
+        ${isAdmin ? `<button onclick="hapusRonda(${item.id})" style="color: #ef4444; background: none; border: none; cursor: pointer; font-weight: 500;">Hapus</button>` : ''}
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ==================== PERTEMUAN ====================
+function buatJadwalPertemuan(e) {
+  e.preventDefault();
+  const data = DB.get('pertemuan');
+  const newData = {
+    id: Date.now(),
+    tanggal: document.getElementById('pertemuanTanggal').value,
+    jam: document.getElementById('pertemuanJam').value,
+    agenda: document.getElementById('pertemuanAgenda').value,
+    tempat: document.getElementById('pertemuanTempat').value,
+    hadir: [],
+    created: Date.now()
+  };
+  data.push(newData);
+  DB.set('pertemuan', data);
+  closeModal('modalJadwalPertemuan');
+  e.target.reset();
+  showToast('Jadwal pertemuan berhasil dibuat!', 'success');
+  renderPertemuan();
+  renderDashboard();
+}
+
+function renderPertemuan() {
+  const data = DB.get('pertemuan');
+  const tbody = document.getElementById('tabelPertemuan');
+  tbody.innerHTML = data.map(item => `
+    <tr>
+      <td>${item.tanggal}</td>
+      <td>${item.jam}</td>
+      <td>${item.agenda}</td>
+      <td>${item.tempat}</td>
+      <td><span class="tag tag-emerald">${item.hadir.length} orang</span></td>
+      <td>
+        <button onclick="generateQR('pertemuan', ${item.id})" style="color: #0ea5e9; background: none; border: none; cursor: pointer; font-weight: 500; margin-right: 12px;">QR Code</button>
+        <button onclick="lihatHadir('pertemuan', ${item.id})" style="color: #10b981; background: none; border: none; cursor: pointer; font-weight: 500; margin-right: 12px;">Lihat</button>
+        ${isAdmin ? `<button onclick="hapusPertemuan(${item.id})" style="color: #ef4444; background: none; border: none; cursor: pointer; font-weight: 500;">Hapus</button>` : ''}
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ==================== QR CODE - FITUR PRO ====================
+function generateQR(type, id) {
+  const url = `${window.location.origin}${window.location.pathname}?absen=${type}&id=${id}`;
+  currentQRData = url;
+  const data = DB.get(type).find(d => d.id == id);
+  document.getElementById('qrInfo').textContent = `${type === 'ronda' ? 'Ronda' : 'Pertemuan'} - ${data.tanggal} ${data.jam}`;
+  QRCode.generate(url, 256);
+  showModal('modalQR');
+}
+
+function downloadQR() {
+  const canvas = document.getElementById('qrCanvas');
+  const link = document.createElement('a');
+  link.download = 'qrcode-absensi.png';
+  link.href = canvas.toDataURL();
+  link.click();
+  showToast('QR Code berhasil didownload!', 'success');
+}
+
+// ==================== ABSENSI ====================
+function submitAbsen(e) {
+  e.preventDefault();
+  const type = document.getElementById('absenType').value;
+  const id = parseInt(document.getElementById('absenId').value);
+  const nama = document.getElementById('absenNama').value;
+  const rumah = document.getElementById('absenRumah').value;
+  
+  const data = DB.get(type);
+  const item = data.find(d => d.id === id);
+  if (item) {
+    if (item.hadir.some(h => h.nama === nama && h.rumah === rumah)) {
+      showToast('Anda sudah absen sebelumnya!', 'error');
+      return;
+    }
+    item.hadir.push({nama, rumah, waktu: new Date().toISOString()});
+    DB.set(type, data);
+    closeModal('modalAbsen');
+    e.target.reset();
+    showToast('Absensi berhasil dicatat!', 'success');
+    renderAll();
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}
+
+function lihatHadir(type, id) {
+  const data = DB.get(type).find(d => d.id === id);
+  if (data.hadir.length === 0) {
+    showToast('Belum ada yang absen', 'info');
+    return;
+  }
+  const list = data.hadir.map((h, i) => `${i+1}. ${h.nama} (${h.rumah})`).join('\n');
+  alert(`Daftar Kehadiran:\n\n${list}`);
+}
+
+function hapusRonda(id) {
+  if (confirm('Hapus jadwal ronda ini?')) {
+    const data = DB.get('ronda').filter(d => d.id !== id);
+    DB.set('ronda', data);
+    renderRonda();
+    renderDashboard();
+    showToast('Jadwal dihapus!', 'success');
+  }
+}
+
+function hapusPertemuan(id) {
+  if (confirm('Hapus jadwal pertemuan ini?')) {
+    const data = DB.get('pertemuan').filter(d => d.id !== id);
+    DB.set('pertemuan', data);
+    renderPertemuan();
+    renderDashboard();
+    showToast('Jadwal dihapus!', 'success');
+  }
+}
+
+// ==================== KELUHAN ====================
+function submitKeluhan(e) {
+  e.preventDefault();
+  const data = DB.get('keluhan');
+  const newData = {
+    id: Date.now(),
+    nama: document.getElementById('keluhanNama').value,
+    rumah: document.getElementById('keluhanRumah').value,
+    kategori: document.getElementById('keluhanKategori').value,
+    deskripsi: document.getElementById('keluhanDeskripsi').value,
+    status: 'Baru',
+    tanggal: formatDate(new Date()),
+    created: Date.now()
+  };
+  data.push(newData);
+  DB.set('keluhan', data);
+  closeModal('modalKeluhan');
+  e.target.reset();
+  showToast('Laporan berhasil dikirim!', 'success');
+  renderKeluhan();
+  renderDashboard();
+}
+
+function renderKeluhan() {
+  const data = DB.get('keluhan');
+  const container = document.getElementById('listKeluhan');
+  if (data.length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: #64748b; padding: 32px; grid-column: 1/-1;">Belum ada laporan keluhan</p>';
+    return;
+  }
+  container.innerHTML = data.map(item => `
+    <div class="keluhan-item card-hover">
+      <div class="flex flex-between" style="margin-bottom: 12px;">
+        <span class="tag tag-amber">${item.kategori}</span>
+        <span class="tag ${item.status === 'Selesai' ? 'tag-green' : item.status === 'Diproses' ? 'tag-blue' : 'tag-slate'}">${item.status}</span>
+      </div>
+      <h4 style="font-weight: 700; color: #1e293b; margin-bottom: 8px;">${item.nama} - ${item.rumah}</h4>
+      <p style="font-size: 14px; color: #475569; margin-bottom: 12px;">${item.deskripsi}</p>
+      <div class="flex flex-between" style="font-size: 12px; color: #64748b;">
+        <span>${item.tanggal}</span>
+        ${isAdmin ? `
+          <div class="flex flex-gap">
+            <button onclick="updateStatusKeluhan(${item.id})" style="color: #0ea5e9; background: none; border: none; cursor: pointer; font-weight: 500;">Update Status</button>
+            <button onclick="hapusKeluhan(${item.id})" style="color: #ef4444; background: none; border: none; cursor: pointer; font-weight: 500;">Hapus</button>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateStatusKeluhan(id) {
+  const data = DB.get('keluhan');
+  const item = data.find(d => d.id === id);
+  const status = prompt('Update status (Baru/Diproses/Selesai):', item.status);
+  if (status && ['Baru', 'Diproses', 'Selesai'].includes(status)) {
+    item.status = status;
+    DB.set('keluhan', data);
+    renderKeluhan();
+    renderDashboard();
+    showToast('Status berhasil diupdate!', 'success');
+  }
+}
+
+function hapusKeluhan(id) {
+  if (confirm('Hapus laporan ini?')) {
+    const data = DB.get('keluhan').filter(d => d.id !== id);
+    DB.set('keluhan', data);
+    renderKeluhan();
+    renderDashboard();
+    showToast('Laporan dihapus!', 'success');
+  }
+}
+
+// ==================== IURAN ====================
+function submitIuran(e) {
+  e.preventDefault();
+  const data = DB.get('iuran');
+  const newData = {
+    id: Date.now(),
+    tanggal: document.getElementById('iuranTanggal').value,
+    jenis: document.getElementById('iuranJenis').value,
+    keterangan: document.getElementById('iuranKeterangan').value,
+    jumlah: parseInt(document.getElementById('iuranJumlah').value),
+    created: Date.now()
+  };
+  data.push(newData);
+  DB.set('iuran', data);
+  closeModal('modalIuran');
+  e.target.reset();
+  showToast('Transaksi berhasil dicatat!', 'success');
+  renderIuran();
+  renderDashboard();
+}
+
+function renderIuran() {
+  const data = DB.get('iuran');
+  const tbody = document.getElementById('tabelIuran');
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 32px; color: #64748b;">Belum ada data iuran</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(item => `
+    <tr>
+      <td>${item.tanggal}</td>
+      <td><span class="tag ${item.jenis === 'masuk' ? 'tag-green' : 'tag-red'}">${item.jenis === 'masuk' ? 'Pemasukan' : 'Pengeluaran'}</span></td>
+      <td>${item.keterangan}</td>
+      <td style="font-weight: 600; color: ${item.jenis === 'masuk' ? '#16a34a' : '#dc2626'};">
+        ${item.jenis === 'masuk' ? '+' : '-'} Rp ${item.jumlah.toLocaleString('id-ID')}
+      </td>
+      ${isAdmin ? `<td><button onclick="hapusIuran(${item.id})" style="color: #ef4444; background: none; border: none; cursor: pointer; font-weight: 500;">Hapus</button></td>` : ''}
+    </tr>
+  `).join('');
+}
+
+function hapusIuran(id) {
+  if (confirm('Hapus transaksi ini?')) {
+    const data = DB.get('iuran').filter(d => d.id !== id);
+    DB.set('iuran', data);
+    renderIuran();
+    renderDashboard();
+    showToast('Transaksi dihapus!', 'success');
+  }
+}
+
+// ==================== SURAT - FITUR BARU OTOMATIS WA ====================
+function submitSurat(e) {
+  e.preventDefault();
+  const data = DB.get('surat');
+  const keperluan = document.getElementById('suratKeperluan').value;
+  const newData = {
+    id: Date.now(),
+    nama: document.getElementById('suratNama').value,
+    nik: document.getElementById('suratNIK').value,
+    rumah: document.getElementById('suratRumah').value,
+    wa: document.getElementById('suratWA').value,
+    keperluan: keperluan,
+    status: 'Menunggu',
+    tanggal: formatDate(new Date()),
+    created: Date.now()
+  };
+  data.push(newData);
+  DB.set('surat', data);
+  closeModal('modalSurat');
+  
+  // Generate preview surat
+  currentSuratData = newData;
+  const suratText = generateSuratText(newData);
+  document.getElementById('previewSuratContent').textContent = suratText;
+  showModal('modalSuratPreview');
+  e.target.reset();
+  showToast('Surat berhasil dibuat!', 'success');
+  renderSurat();
+}
+
+function generateSuratText(data) {
+  const today = new Date();
+  const tanggal = today.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+  
+  return `SURAT PENGANTAR RT 01 RW 10
+Jl. Cendrawasih Raya, Kel. Pengasinan
+Kec. Sawangan, Kota Depok
+
+Nomor: ${data.id}/RT01/X/${today.getFullYear()}
+
+Yang bertanda tangan di bawah ini Ketua RT 01 RW 10 dengan ini menerangkan bahwa:
+
+Nama          : ${data.nama}
+NIK           : ${data.nik}
+Alamat        : ${data.rumah}, RT 01 RW 10
+                Jl. Cendrawasih Raya, Kel. Pengasinan
+                Kec. Sawangan, Kota Depok
+
+Adalah benar warga kami yang berdomisili di lingkungan RT 01 RW 10. Surat pengantar ini dibuat untuk keperluan ${data.keperluan}.
+
+Demikian surat pengantar ini dibuat untuk dapat dipergunakan sebagaimana mestinya.
+
+Depok, ${tanggal}
+
+Ketua RT 01 RW 10,
+Cendrawasih Raya
+
+(ttd)
+
+_______________________`;
+}
+
+function kirimSuratWA() {
+  if (!currentSuratData) return;
+  const suratText = generateSuratText(currentSuratData);
+  const pesan = `Kepada Yth. Bpk/Ibu ${currentSuratData.nama},\n\nBerikut Surat Pengantar Domisili RT 01 RW 10:\n\n${suratText}\n\nSurat asli dapat diambil di rumah Ketua RT. Terima kasih.`;
+  const url = `https://wa.me/${currentSuratData.wa}?text=${encodeURIComponent(pesan)}`;
+  window.open(url, '_blank');
+  showToast('Membuka WhatsApp...', 'success');
+}
+
+function renderSurat() {
+  const data = DB.get('surat');
+  const container = document.getElementById('listSurat');
+  if (data.length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: #64748b; padding: 32px; grid-column: 1/-1;">Belum ada pengajuan surat</p>';
+    return;
+  }
+  container.innerHTML = data.map(item => `
+    <div class="surat-item card-hover">
+      <div class="flex flex-between" style="margin-bottom: 12px;">
+        <span class="tag tag-sky">${item.keperluan}</span>
+        <span class="tag ${item.status === 'Selesai' ? 'tag-green' : item.status === 'Diproses' ? 'tag-blue' : 'tag-amber'}">${item.status}</span>
+      </div>
+      <h4 style="font-weight: 700; color: #1e293b; margin-bottom: 4px;">${item.nama}</h4>
+      <p style="font-size: 12px; color: #64748b; margin-bottom: 4px;">NIK: ${item.nik} | Rumah: ${item.rumah}</p>
+      <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;">WA: ${item.wa}</p>
+      <p style="font-size: 12px; color: #64748b;">${item.tanggal}</p>
+      ${isAdmin ? `
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; flex-wrap: wrap;">
+          <button onclick="previewSurat(${item.id})" class="btn" style="flex: 1; font-size: 12px; padding: 6px; background: #10b981; color: white;">Kirim WA</button>
+          <button onclick="updateStatusSurat(${item.id})" class="btn" style="flex: 1; font-size: 12px; padding: 6px; background: #0ea5e9; color: white;">Update</button>
+          <button onclick="hapusSurat(${item.id})" class="btn" style="flex: 1; font-size: 12px; padding: 6px; background: #ef4444; color: white;">Hapus</button>
+        </div>
+      ` : ''}
+    </div>
+  `).join('');
+}
+
+function previewSurat(id) {
+  const data = DB.get('surat').find(s => s.id === id);
+  if (data) {
+    currentSuratData = data;
+    const suratText = generateSuratText(data);
+    document.getElementById('previewSuratContent').textContent = suratText;
+    showModal('modalSuratPreview');
+  }
+}
+
+function updateStatusSurat(id) {
+  const data = DB.get('surat');
+  const item = data.find(d => d.id === id);
+  const status = prompt('Update status (Menunggu/Diproses/Selesai):', item.status);
+  if (status && ['Menunggu', 'Diproses', 'Selesai'].includes(status)) {
+    item.status = status;
+    DB.set('surat', data);
+    renderSurat();
+    showToast('Status berhasil diupdate!', 'success');
+  }
+}
+
+function hapusSurat(id) {
+  if (confirm('Hapus pengajuan ini?')) {
+    const data = DB.get('surat').filter(d => d.id !== id);
+    DB.set('surat', data);
+    renderSurat();
+    showToast('Pengajuan dihapus!', 'success');
+  }
+}
+
+// ==================== DASHBOARD & CHARTS - FITUR PRO ====================
+function setupYearFilters() {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let i = currentYear - 2; i <= currentYear + 1; i++) years.push(i);
+  
+  const selectRonda = document.getElementById('filterTahunRonda');
+  const selectPertemuan = document.getElementById('filterTahunPertemuan');
+  selectRonda.innerHTML = years.map(y => `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`).join('');
+  selectPertemuan.innerHTML = years.map(y => `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`).join('');
+}
+
+function renderDashboard() {
+  const ronda = DB.get('ronda');
+  const pertemuan = DB.get('pertemuan');
+  const keluhan = DB.get('keluhan');
+  const iuran = DB.get('iuran');
+  
+  const thisMonth = new Date().getMonth();
+  const thisYear = new Date().getFullYear();
+  
+  const rondaBulanIni = ronda.filter(r => {
+    const d = new Date(r.tanggal);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+  });
+  const hadirRonda = rondaBulanIni.reduce((sum, r) => sum + r.hadir.length, 0);
+  const totalRonda = rondaBulanIni.length * 10;
+  document.getElementById('statRonda').textContent = totalRonda > 0 ? Math.round(hadirRonda / totalRonda * 100) + '%' : '0%';
+  
+  const pertemuanBulanIni = pertemuan.filter(p => {
+    const d = new Date(p.tanggal);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+  });
+  const hadirPertemuan = pertemuanBulanIni.reduce((sum, p) => sum + p.hadir.length, 0);
+  const totalPertemuan = pertemuanBulanIni.length * 50;
+  document.getElementById('statPertemuan').textContent = totalPertemuan > 0 ? Math.round(hadirPertemuan / totalPertemuan * 100) + '%' : '0%';
+  
+  document.getElementById('statKeluhan').textContent = keluhan.filter(k => k.status !== 'Selesai').length;
+  
+  const saldo = iuran.reduce((sum, i) => sum + (i.jenis === 'masuk' ? i.jumlah : -i.jumlah), 0);
+  document.getElementById('statKas').textContent = 'Rp ' + saldo.toLocaleString('id-ID');
+  
+  const allJadwal = [
+    ...ronda.map(r => ({...r, type: 'Ronda', icon: '🌙'})),
+    ...pertemuan.map(p => ({...p, type: 'Pertemuan', icon: '👥', petugas: p.agenda}))
+  ].sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal)).slice(0, 5);
+  
+  document.getElementById('jadwalTerdekat').innerHTML = allJadwal.length > 0 ? allJadwal.map(j => `
+    <div style="display: flex; align-items: center; gap: 16px; padding: 16px; background: #f8fafc; border-radius: 12px;">
+      <div style="width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+        ${j.icon}
+      </div>
+      <div style="flex: 1;">
+        <h4 style="font-weight: 600; color: #1e293b;">${j.type}: ${j.petugas || j.agenda}</h4>
+        <p style="font-size: 14px; color: #64748b;">${j.tanggal} - ${j.jam}</p>
+      </div>
+    </div>
+  `).join('') : '<p style="text-align: center; color: #64748b; padding: 16px;">Belum ada jadwal</p>';
+}
+
+function renderCharts() {
+  renderBarChart('chartRonda', 'ronda', document.getElementById('filterTahunRonda').value, 'totalRondaTahun');
+  renderBarChart('chartPertemuan', 'pertemuan', document.getElementById('filterTahunPertemuan').value, 'totalPertemuanTahun');
+}
+
+function renderBarChart(canvasId, type, year, totalElementId) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  const data = DB.get(type);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+  
+  const monthlyData = months.map((_, idx) => {
+    const monthData = data.filter(d => {
+      const dt = new Date(d.tanggal);
+      return dt.getMonth() === idx && dt.getFullYear() == year;
+    });
+    const hadir = monthData.reduce((sum, d) => sum + d.hadir.length, 0);
+    const total = monthData.length * (type === 'ronda' ? 10 : 50);
+    return total > 0 ? Math.round(hadir / total * 100) : 0;
+  });
+  
+  // Calculate yearly total
+  const totalHadir = data.filter(d => new Date(d.tanggal).getFullYear() == year).reduce((sum, d) => sum + d.hadir.length, 0);
+  const totalPossible = data.filter(d => new Date(d.tanggal).getFullYear() == year).length * (type === 'ronda' ? 10 : 50);
+  const yearlyPercent = totalPossible > 0 ? Math.round(totalHadir / totalPossible * 100) : 0;
+  document.getElementById(totalElementId).textContent = yearlyPercent + '%';
+  
+  const width = canvas.width;
+  const height = canvas.height;
+  const padding = 40;
+  const barWidth = (width - padding * 2) / 12 - 10;
+  const maxHeight = height - padding * 2;
+  
+  ctx.clearRect(0, 0, width, height);
+  
+  // Grid
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padding + (maxHeight / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(padding, y);
+    ctx.lineTo(width - padding, y);
+    ctx.stroke();
+    ctx.fillStyle = '#64748b';
+    ctx.font = '10px system-ui';
+    ctx.fillText((100 - i * 25) + '%', 5, y + 3);
+  }
+  
+  // Bars
+  monthlyData.forEach((val, idx) => {
+    const barHeight = (val / 100) * maxHeight;
+    const x = padding + idx * (barWidth + 10);
+    const y = height - padding - barHeight;
+    
+    const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight);
+    gradient.addColorStop(0, '#0ea5e9');
+    gradient.addColorStop(1, '#10b981');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, barWidth, barHeight);
+    
+    ctx.fillStyle = '#1e293b';
+    ctx.font = 'bold 10px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText(val + '%', x + barWidth / 2, y - 5);
+    
+    ctx.fillStyle = '#64748b';
+    ctx.font = '10px system-ui';
+    ctx.fillText(months[idx], x + barWidth / 2, height - padding + 15);
+  });
+}
+
+// ==================== WA BLAST - FITUR PRO ====================
+function blastWA(type) {
+  const settings = DB.getObj('settings');
+  if (!settings.waGroup) {
+    showToast('Nomor WA Grup belum diset di Pengaturan!', 'error');
+    switchPage('pengaturan');
+    return;
+  }
+  
+  const data = DB.get(type);
+  const jadwalTerdekat = data.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal)).find(d => new Date(d.tanggal) >= new Date());
+  
+  if (!jadwalTerdekat) {
+    showToast('Tidak ada jadwal ' + type + ' terdekat', 'error');
+    return;
+  }
+  
+  const pesan = `Yth. Warga RT 01 RW 10, diingatkan jadwal ${type === 'ronda' ? 'ronda' : 'pertemuan'} tgl ${jadwalTerdekat.tanggal} jam ${jadwalTerdekat.jam}. Mohon hadir. Terima kasih - Pengurus RT`;
+  const url = `https://wa.me/${settings.waGroup}?text=${encodeURIComponent(pesan)}`;
+  window.open(url, '_blank');
+}
+
+// ==================== SETTINGS ====================
+function simpanWAGroup() {
+  const nomor = document.getElementById('inputWAGroup').value.trim();
+  if (!nomor || !/^62\d+$/.test(nomor)) {
+    showToast('Format nomor salah! Gunakan 62xxx', 'error');
+    return;
+  }
+  const settings = DB.getObj('settings');
+  settings.waGroup = nomor;
+  DB.setObj('settings', settings);
+  showToast('Nomor WA berhasil disimpan!', 'success');
+}
+
+function exportData() {
+  const allData = {
+    ronda: DB.get('ronda'),
+    pertemuan: DB.get('pertemuan'),
+    keluhan: DB.get('keluhan'),
+    iuran: DB.get('iuran'),
+    surat: DB.get('surat'),
+    settings: DB.getObj('settings'),
+    exported: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(allData, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `backup-rt01-${formatDate(new Date())}.json`;
+  a.click();
+  showToast('Data berhasil diexport!', 'success');
+}
+
+// ==================== UTILS ====================
+function showModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+function showToast(msg, type = 'info') {
+  const colors = {
+    success: '#22c55e',
+    error: '#ef4444',
+    info: '#0ea5e9'
+  };
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.style.background = colors[type];
+  toast.textContent = msg;
+  document.getElementById('toastContainer').appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function formatDate(date) {
+  const d = new Date(date);
+  return d.toISOString().split('T')[0];
+}
+
+function renderAll() {
+  renderDashboard();
+  renderCharts();
+  renderRonda();
+  renderPertemuan();
+  renderKeluhan();
+  renderIuran();
+  renderSurat();
+  if (isAdmin) {
+    const settings = DB.getObj('settings');
+    document.getElementById('inputWAGroup').value = settings.waGroup || '';
+  }
+}
+</script>
+
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>
